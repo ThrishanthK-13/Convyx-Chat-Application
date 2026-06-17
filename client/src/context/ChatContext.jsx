@@ -9,15 +9,30 @@ export const ChatProvider = ({ children }) => {
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
     const fetchUsers = async () => {
-      const res = await api.get("/users");
-      setUsers(res.data);
+      try {
+        const res = await api.get("/users");
+        setUsers(res.data);
+      } catch (error) {
+        console.error(
+          "Fetch Users Error:",
+          error.response?.data || error.message
+        );
+
+        if (error.response?.status === 401) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+        }
+      }
     };
 
-    fetchUsers();
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      fetchUsers();
+    } else {
+      console.log("No token found");
+    }
   }, []);
 
   return (
@@ -27,7 +42,7 @@ export const ChatProvider = ({ children }) => {
         currentChat,
         setCurrentChat,
         messages,
-        setMessages
+        setMessages,
       }}
     >
       {children}
