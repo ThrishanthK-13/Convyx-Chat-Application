@@ -1,7 +1,7 @@
 const { verifyToken } = require("../config/jwt");
 
 module.exports = (req, res, next) => {
-  console.log("🔐 AUTH HEADER:", req.headers.authorization);
+  console.log("AUTH HEADER:", req.headers.authorization);
 
   const authHeader = req.headers.authorization;
 
@@ -13,9 +13,18 @@ module.exports = (req, res, next) => {
 
   try {
     const decoded = verifyToken(token);
+
+    console.log("DECODED TOKEN:", decoded);
+
     req.user = decoded;
+
     next();
   } catch (err) {
-    return res.status(401).json({ error: "Invalid token" });
+    console.log("TOKEN ERROR:", err.message);
+
+    return res.status(401).json({
+      error: "Invalid token",
+      message: err.message
+    });
   }
 };
