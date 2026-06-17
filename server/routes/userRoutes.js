@@ -9,13 +9,11 @@ const { upload } = require("../utils/upload"); // ✅ CORRECT IMPORT
 ========================= */
 router.get("/", auth, async (req, res) => {
   try {
-    const users = await User.find(
-      {
-        _id: { $ne: req.user.id },
-        isVerified: true
-      },
-      "name phone profilePic about online lastSeen"
-    ).lean();
+    console.log("Logged in user:", req.user);
+
+    const users = await User.find({});
+
+    console.log("Users found:", users);
 
     res.json(users);
   } catch (err) {
